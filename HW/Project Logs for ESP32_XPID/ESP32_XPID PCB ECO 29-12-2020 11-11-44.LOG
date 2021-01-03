@@ -1,0 +1,105 @@
+Removed Pin From Net: NetName=5V Pin=J2-1
+Removed Pin From Net: NetName=GND Pin=J2-3
+Removed Pin From Net: NetName=EMER Pin=J3-1
+Removed Pin From Net: NetName=GND Pin=J3-2
+Removed Pin From Net: NetName=GND Pin=J4-1
+Removed Pin From Net: NetName=STOP_SW_L Pin=J4-2
+Removed Pin From Net: NetName=STOP_SW_R Pin=J5-1
+Removed Pin From Net: NetName=GND Pin=J5-2
+Removed Pin From Net: NetName=GND Pin=J6-1
+Removed Pin From Net: NetName=EN_L Pin=J6-2
+Removed Pin From Net: NetName=DIR_L Pin=J6-3
+Removed Pin From Net: NetName=STEP_L Pin=J6-4
+Removed Pin From Net: NetName=STEP_R Pin=J7-1
+Removed Pin From Net: NetName=DIR_R Pin=J7-2
+Removed Pin From Net: NetName=EN_R Pin=J7-3
+Removed Pin From Net: NetName=GND Pin=J7-4
+Change Component Footprint: Designator=J3 Old Footprint=TE 282834-2 New Footprint=HDRV2W110P0X508_1X2_1016X810X1000P
+Change Component Footprint: Designator=J4 Old Footprint=TE 282834-2 New Footprint=HDRV2W110P0X508_1X2_1016X810X1000P
+Change Component Footprint: Designator=J5 Old Footprint=TE 282834-2 New Footprint=HDRV2W110P0X508_1X2_1016X810X1000P
+Change Component Footprint: Designator=J2 Old Footprint=TE 282834-3 New Footprint=1729131
+Change Component Footprint: Designator=J6 Old Footprint=TE 282834-4 New Footprint=1729144
+Change Component Footprint: Designator=J7 Old Footprint=TE 282834-4 New Footprint=1729144
+Change Component Comment : Designator=J3 Old Comment=282834-2 New Comment=1729128
+Change Component Comment : Designator=J4 Old Comment=282834-2 New Comment=1729128
+Change Component Comment : Designator=J5 Old Comment=282834-2 New Comment=1729128
+Change Component Comment : Designator=J2 Old Comment=282834-3 New Comment=1729131
+Change Component Comment : Designator=J6 Old Comment=282834-4 New Comment=1729144
+Change Component Comment : Designator=J7 Old Comment=282834-4 New Comment=1729144
+Change component parameters: Designator = "J2"; Footprint = "1729131"; UniqueID = "\ZHFUAHPW"
+Change component parameters. Clean all parameters for all variants
+Change component parameters (AddParameter): Name = "Arrow Part Number"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Arrow Price/Stock"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Datasheet Link"; Value = "https://componentsearchengine.com/Datasheets/2/1729131.pdf"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Height"; Value = "10.15mm"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Name"; Value = "Phoenix Contact"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Part_Number"; Value = "1729131"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Part Number"; Value = "651-1729131"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/Phoenix-Contact/1729131/?qs=GFUSqQMLmmkspw%2F%2FW6PC3g%3D%3D"; VariantName = "[No Variations]"
+Change component parameters: Designator = "J3"; Footprint = "HDRV2W110P0X508_1X2_1016X810X1000P"; UniqueID = "\RTNZRCGH"
+Change component parameters. Clean all parameters for all variants
+Change component parameters (AddParameter): Name = "Arrow Part Number"; Value = "1729128"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Arrow Price/Stock"; Value = "https://www.arrow.com/en/products/1729128/phoenix-contact"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Datasheet Link"; Value = "http://docs-emea.rs-online.com/webdocs/1380/0900766b81380189.pdf"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Height"; Value = "10mm"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Name"; Value = "Phoenix Contact"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Part_Number"; Value = "1729128"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Part Number"; Value = "651-1729128"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/Phoenix-Contact/1729128?qs=GFUSqQMLmmnCBVBY3dts9w%3D%3D"; VariantName = "[No Variations]"
+Change component parameters: Designator = "J4"; Footprint = "HDRV2W110P0X508_1X2_1016X810X1000P"; UniqueID = "\XOOVQSSJ"
+Change component parameters. Clean all parameters for all variants
+Change component parameters (AddParameter): Name = "Arrow Part Number"; Value = "1729128"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Arrow Price/Stock"; Value = "https://www.arrow.com/en/products/1729128/phoenix-contact"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Datasheet Link"; Value = "http://docs-emea.rs-online.com/webdocs/1380/0900766b81380189.pdf"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Height"; Value = "10mm"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Name"; Value = "Phoenix Contact"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Part_Number"; Value = "1729128"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Part Number"; Value = "651-1729128"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/Phoenix-Contact/1729128?qs=GFUSqQMLmmnCBVBY3dts9w%3D%3D"; VariantName = "[No Variations]"
+Change component parameters: Designator = "J5"; Footprint = "HDRV2W110P0X508_1X2_1016X810X1000P"; UniqueID = "\DZOYJYMH"
+Change component parameters. Clean all parameters for all variants
+Change component parameters (AddParameter): Name = "Arrow Part Number"; Value = "1729128"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Arrow Price/Stock"; Value = "https://www.arrow.com/en/products/1729128/phoenix-contact"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Datasheet Link"; Value = "http://docs-emea.rs-online.com/webdocs/1380/0900766b81380189.pdf"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Height"; Value = "10mm"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Name"; Value = "Phoenix Contact"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Part_Number"; Value = "1729128"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Part Number"; Value = "651-1729128"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/Phoenix-Contact/1729128?qs=GFUSqQMLmmnCBVBY3dts9w%3D%3D"; VariantName = "[No Variations]"
+Change component parameters: Designator = "J6"; Footprint = "1729144"; UniqueID = "\WKLWOIXN"
+Change component parameters. Clean all parameters for all variants
+Change component parameters (AddParameter): Name = "Arrow Part Number"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Arrow Price/Stock"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Datasheet Link"; Value = "https://www.phoenixcontact.com/online/portal/gb/?uri=pxc-oc-itemdetail:pid=1729144&library=gben&pcck=P-11-01-05&tab=1&selectedCategory=ALL"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Height"; Value = "10.15mm"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Name"; Value = "Phoenix Contact"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Part_Number"; Value = "1729144"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Part Number"; Value = "651-1729144"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/Phoenix-Contact/1729144?qs=GFUSqQMLmmlMVG2JxNOUXQ%3D%3D"; VariantName = "[No Variations]"
+Change component parameters: Designator = "J7"; Footprint = "1729144"; UniqueID = "\CVSNIGXA"
+Change component parameters. Clean all parameters for all variants
+Change component parameters (AddParameter): Name = "Arrow Part Number"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Arrow Price/Stock"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Datasheet Link"; Value = "https://www.phoenixcontact.com/online/portal/gb/?uri=pxc-oc-itemdetail:pid=1729144&library=gben&pcck=P-11-01-05&tab=1&selectedCategory=ALL"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Height"; Value = "10.15mm"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Name"; Value = "Phoenix Contact"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Part_Number"; Value = "1729144"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Part Number"; Value = "651-1729144"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/Phoenix-Contact/1729144?qs=GFUSqQMLmmlMVG2JxNOUXQ%3D%3D"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=GND Pin=J2-1
+Added Pin To Net: NetName=5V Pin=J2-3
+Added Pin To Net: NetName=GND Pin=J3-1
+Added Pin To Net: NetName=EMER Pin=J3-2
+Added Pin To Net: NetName=STOP_SW_L Pin=J4-1
+Added Pin To Net: NetName=GND Pin=J4-2
+Added Pin To Net: NetName=GND Pin=J5-1
+Added Pin To Net: NetName=STOP_SW_R Pin=J5-2
+Added Pin To Net: NetName=STEP_L Pin=J6-1
+Added Pin To Net: NetName=DIR_L Pin=J6-2
+Added Pin To Net: NetName=EN_L Pin=J6-3
+Added Pin To Net: NetName=GND Pin=J6-4
+Added Pin To Net: NetName=GND Pin=J7-1
+Added Pin To Net: NetName=EN_R Pin=J7-2
+Added Pin To Net: NetName=DIR_R Pin=J7-3
+Added Pin To Net: NetName=STEP_R Pin=J7-4
+Added Room: Name=ESP32_XPID

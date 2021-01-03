@@ -1,0 +1,21 @@
+*************************************************************
+FileName = ESP32_XPID.GBR
+AutoAperture = True
+*************************************************************
+Generating : Bottom Layer
+      File : ESP32_XPID.GBL
+
+    Adding Layer      : Bottom Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D10
+    D11
+    D12
+    D13
+    D14
+    D15
+*************************************************************
+

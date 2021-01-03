@@ -1,0 +1,12 @@
+Output: NC Drill Files
+Type  : NC Drill
+From  : PCB Document [ESP32_XPID.PcbDoc]
+   Generated File[ESP32_XPID.TXT]
+   Generated File[ESP32_XPID.LDP]
+   Generated File[ESP32_XPID.DRR]
+
+
+Files Generated   : 3
+Documents Printed : 0
+
+Finished Output Generation At 14:20:04 On 29/12/2020

@@ -1,0 +1,73 @@
+Change Component Footprint: Designator=J2 Old Footprint=1729131 New Footprint=TB00750803BE
+Change Component Footprint: Designator=J6 Old Footprint=1729144 New Footprint=TB00750804BE
+Change Component Footprint: Designator=J7 Old Footprint=1729144 New Footprint=TB00750804BE
+Change Component Footprint: Designator=J3 Old Footprint=HDRV2W110P0X508_1X2_1016X810X1000P New Footprint=TB00750802BE
+Change Component Footprint: Designator=J4 Old Footprint=HDRV2W110P0X508_1X2_1016X810X1000P New Footprint=TB00750802BE
+Change Component Footprint: Designator=J5 Old Footprint=HDRV2W110P0X508_1X2_1016X810X1000P New Footprint=TB00750802BE
+Change Component Comment : Designator=J3 Old Comment=1729128 New Comment=TB007-508-02BE
+Change Component Comment : Designator=J4 Old Comment=1729128 New Comment=TB007-508-02BE
+Change Component Comment : Designator=J5 Old Comment=1729128 New Comment=TB007-508-02BE
+Change Component Comment : Designator=J2 Old Comment=1729131 New Comment=TB007-508-03BE
+Change Component Comment : Designator=J6 Old Comment=1729144 New Comment=TB007-508-04BE
+Change Component Comment : Designator=J7 Old Comment=1729144 New Comment=TB007-508-04BE
+Change component parameters: Designator = "J2"; Footprint = "TB00750803BE"; UniqueID = "\OALBQHYZ"
+Change component parameters. Clean all parameters for all variants
+Change component parameters (AddParameter): Name = "Arrow Part Number"; Value = "TB007-508-03BE"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Arrow Price/Stock"; Value = "https://www.arrow.com/en/products/tb007-508-03be/cui-devices"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Datasheet Link"; Value = "https://eu.mouser.com/datasheet/2/670/tb007_508-1550621.pdf"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Height"; Value = "14.4mm"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Name"; Value = "CUI Devices"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Part_Number"; Value = "TB007-508-03BE"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Part Number"; Value = "490-TB007-508-03BE"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/CUI-Devices/TB007-508-03BE?qs=vLWxofP3U2zHYiGqNs1vAA%3D%3D"; VariantName = "[No Variations]"
+Change component parameters: Designator = "J3"; Footprint = "TB00750802BE"; UniqueID = "\AAZODTLK"
+Change component parameters. Clean all parameters for all variants
+Change component parameters (AddParameter): Name = "Arrow Part Number"; Value = "TB007-508-02BE"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Arrow Price/Stock"; Value = "https://www.arrow.com/en/products/tb007-508-02be/cui-devices"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Datasheet Link"; Value = "https://www.mouser.com/datasheet/2/670/tb007-508-1550621.pdf"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Height"; Value = "14mm"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Name"; Value = "CUI Devices"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Part_Number"; Value = "TB007-508-02BE"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Part Number"; Value = "490-TB007-508-02BE"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/CUI-Devices/TB007-508-02BE/?qs=vLWxofP3U2y6PFKAfCqKUQ%3D%3D"; VariantName = "[No Variations]"
+Change component parameters: Designator = "J4"; Footprint = "TB00750802BE"; UniqueID = "\JKSWVGXM"
+Change component parameters. Clean all parameters for all variants
+Change component parameters (AddParameter): Name = "Arrow Part Number"; Value = "TB007-508-02BE"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Arrow Price/Stock"; Value = "https://www.arrow.com/en/products/tb007-508-02be/cui-devices"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Datasheet Link"; Value = "https://www.mouser.com/datasheet/2/670/tb007-508-1550621.pdf"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Height"; Value = "14mm"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Name"; Value = "CUI Devices"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Part_Number"; Value = "TB007-508-02BE"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Part Number"; Value = "490-TB007-508-02BE"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/CUI-Devices/TB007-508-02BE/?qs=vLWxofP3U2y6PFKAfCqKUQ%3D%3D"; VariantName = "[No Variations]"
+Change component parameters: Designator = "J5"; Footprint = "TB00750802BE"; UniqueID = "\UWMOKLOW"
+Change component parameters. Clean all parameters for all variants
+Change component parameters (AddParameter): Name = "Arrow Part Number"; Value = "TB007-508-02BE"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Arrow Price/Stock"; Value = "https://www.arrow.com/en/products/tb007-508-02be/cui-devices"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Datasheet Link"; Value = "https://www.mouser.com/datasheet/2/670/tb007-508-1550621.pdf"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Height"; Value = "14mm"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Name"; Value = "CUI Devices"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Part_Number"; Value = "TB007-508-02BE"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Part Number"; Value = "490-TB007-508-02BE"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/CUI-Devices/TB007-508-02BE/?qs=vLWxofP3U2y6PFKAfCqKUQ%3D%3D"; VariantName = "[No Variations]"
+Change component parameters: Designator = "J6"; Footprint = "TB00750804BE"; UniqueID = "\YIUVDJZY"
+Change component parameters. Clean all parameters for all variants
+Change component parameters (AddParameter): Name = "Arrow Part Number"; Value = "TB007-508-04BE"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Arrow Price/Stock"; Value = "https://www.arrow.com/en/products/tb007-508-04be/cui-devices"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Datasheet Link"; Value = "https://componentsearchengine.com/Datasheets/1/TB007-508-04BE.pdf"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Height"; Value = "14mm"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Name"; Value = "CUI Devices"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Part_Number"; Value = "TB007-508-04BE"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Part Number"; Value = "490-TB007-508-04BE"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/CUI-Devices/TB007-508-04BE?qs=vLWxofP3U2wnrmN2C1kFLw%3D%3D"; VariantName = "[No Variations]"
+Change component parameters: Designator = "J7"; Footprint = "TB00750804BE"; UniqueID = "\MMMPHBVX"
+Change component parameters. Clean all parameters for all variants
+Change component parameters (AddParameter): Name = "Arrow Part Number"; Value = "TB007-508-04BE"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Arrow Price/Stock"; Value = "https://www.arrow.com/en/products/tb007-508-04be/cui-devices"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Datasheet Link"; Value = "https://componentsearchengine.com/Datasheets/1/TB007-508-04BE.pdf"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Height"; Value = "14mm"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Name"; Value = "CUI Devices"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Part_Number"; Value = "TB007-508-04BE"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Part Number"; Value = "490-TB007-508-04BE"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/CUI-Devices/TB007-508-04BE?qs=vLWxofP3U2wnrmN2C1kFLw%3D%3D"; VariantName = "[No Variations]"
+Added Room: Name=ESP32_XPID
