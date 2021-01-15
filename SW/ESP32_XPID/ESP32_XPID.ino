@@ -49,21 +49,21 @@
 
 	Pin out of ESP32 for steppers
 
-	GPIO 23 - Step pulse for left stepper. 
-	GPIO 22 - Direction signal for left stepper.
-	GPIO  1 - Enable signal for left stepper 
-	GPIO  3 - Stop switch for left stepper
-  GPIO 36 - Step pulse for right stepper. 
-  GPIO 39 - Direction signal for right stepper.
-  GPIO 34 - Enable signal for right stepper 
-  GPIO 35 - Stop switch for right stepper
+	GPIO 21 - Step pulse for left stepper. 
+	GPIO 19 - Direction signal for left stepper.
+	GPIO 18 - Enable signal for left stepper 
+	GPIO  4 - Stop switch for left stepper
+  GPIO 32 - Step pulse for right stepper. 
+  GPIO 25 - Direction signal for right stepper.
+  GPIO 26 - Enable signal for right stepper 
+  GPIO 27 - Stop switch for right stepper
 
 	Auxiliar signals
 
 	GPIO 14 - Emergency stop
-	GPIO 12 - Main relay control
-  GPIO 9  - Debug RX
-  GPIO 10 - Debug TX
+	GPIO 13 - Main relay control
+  GPIO 16  - Debug RX
+  GPIO 17 - Debug TX
 
 */
 
@@ -82,7 +82,7 @@
 
 #define   REVOLUTION_ANGLE     360    //Complete revolution angle in degrees
 #define   OPERATION_ANGLE      100     //Desired operation angle in degrees
-#define   REDUCTION_RATIO      60     //GearBox reduction ratio
+#define   REDUCTION_RATIO      20     //GearBox reduction ratio
 #define   STEPS_PER_REVOLUTION 200    //Motor steps per revolution
 #define   SECONDS_TO_MICROS    (long)1000000  //Divide ratio for seconds to useconds
 #define   N_MOTORS             2      //Number of used motors
@@ -92,12 +92,12 @@
 #define   HOMING_OFFSET        200    //Home offset in steps
 #define   HOMING_TIMEOUT       5000   //Home cycle time out in ms
 #define   MOTOR_MAX_SPEED      4000    //Motor max speed in steps/second
-#define   MOTOR_MIN_SPEED      300     //Motor min speed in steps/second
+#define   MOTOR_MIN_SPEED      10     //Motor min speed in steps/second
 #define   MOTOR_ACCELERATION   10000   //Motor acceleration in step/s^2 
 
 //Stop switch debounce time
 
-#define   DEBOUNCE_TIME        20    //Debounce time in decens of ms
+#define   DEBOUNCE_TIME        2    //Debounce time in hundred of ms
 
 //Pin defines
 #define STEP_L_PIN  21
@@ -166,8 +166,8 @@ const struct stepper_config_s stepper_config[N_MOTORS] = {
       direction : DIR_L_PIN,
       direction_high_count_up : false,
       auto_enable : true,
-      on_delay_us : 50,
-      off_delay_ms : 10
+      on_delay_us : 0,
+      off_delay_ms : 1000
     },
     {
       step : STEP_R_PIN,
@@ -178,8 +178,8 @@ const struct stepper_config_s stepper_config[N_MOTORS] = {
       direction : DIR_R_PIN,
       direction_high_count_up : false,
       auto_enable : true,
-      on_delay_us : 50,
-      off_delay_ms : 10
+      on_delay_us : 0,
+      off_delay_ms : 1000
     }
 };
 
@@ -223,6 +223,10 @@ double integrated_motor_2_error = 0;
 float last_motor_1_error		= 0;
 float last_motor_2_error		= 0; 
 int disable						= 1; //Motor stop flag
+int motor1minspeed = MOTOR_MIN_SPEED;
+int motor2minspeed = MOTOR_MIN_SPEED;
+int motor1maxspeed = MOTOR_MAX_SPEED;
+int motor2maxspeed = MOTOR_MAX_SPEED;
 
 //debug global variables
 byte debugbyte =0;				//This values are for debug purpose and can be send via
@@ -247,9 +251,10 @@ struct emergency_stop_switch_s{
   uint8_t pin; 
 };
 
-struct emergency_stop_switch_s emergencyStopSwitch={currentState:0,oldState:0,pin:EMERGENCY_STOP_PIN};
+uint8_t oldMotorDirection1=0;
+uint8_t oldMotorDirection2=0;
 
-hw_timer_t * timer = NULL;
+struct emergency_stop_switch_s emergencyStopSwitch={currentState:0,oldState:0,pin:EMERGENCY_STOP_PIN};
 
 //Function prototypes
 
@@ -257,46 +262,49 @@ void SetMainRelayState(uint8_t state);
 void EnableSteppers(void);
 void DisableSteppers(void);
 
-//Timer interrupt handler
 
-void IRAM_ATTR debounceTimer() {
+#define TASK_DELAY_100MS 100
+void timedTask(void * parameter) {
   
   uint8_t i;
+  const TickType_t delay_100ms = TASK_DELAY_100MS / portTICK_PERIOD_MS;
 
-  enableSpeedUpdate=true;
-  
-  for(i=0;i<(N_MOTORS+1);i++){
-    if(debounce[i].enabled==true)
-    {
-      if(debounce[i].debounce_cnt>DEBOUNCE_TIME){
-        debounce[i].enabled=false;
-        debounce[i].debounce_cnt=0;
-      }
-      else
+  while (true)
+  {
+    for(i=0;i<(N_MOTORS+1);i++){
+      if(debounce[i].enabled==true)
       {
-        debounce[i].debounce_cnt++;
+        if(debounce[i].debounce_cnt>DEBOUNCE_TIME){
+          debounce[i].enabled=false;
+          debounce[i].debounce_cnt=0;
+        }
+        else
+        {
+          debounce[i].debounce_cnt++;
+        }
       }
     }
-  }
+  
+    //check for emergency stop
+    emergencyStopSwitch.currentState=digitalRead(emergencyStopSwitch.pin);
+    //Active high emergency stop!
+    if((emergencyStopSwitch.currentState==1)&&(emergencyStopSwitch.currentState!=emergencyStopSwitch.oldState)){
+      if(debounce[2].enabled==false){
+        debounce[2].enabled=true;
+        DisableSteppers();
+        disable=1;
+        SetMainRelayState(OFF);
+      }  
+    }
+    else if((emergencyStopSwitch.currentState==0)&&(emergencyStopSwitch.currentState!=emergencyStopSwitch.oldState)){
+      ESP.restart();  
+    }
+    emergencyStopSwitch.oldState=emergencyStopSwitch.currentState;
+  
+    vTaskDelay(delay_100ms);
 
-  //check for emergency stop
-  emergencyStopSwitch.currentState=digitalRead(emergencyStopSwitch.pin);
-  //Active high emergency stop!
-  if((emergencyStopSwitch.currentState==1)&&(emergencyStopSwitch.currentState!=emergencyStopSwitch.oldState)){
-    if(debounce[2].enabled==false){
-      debounce[2].enabled=true;
-      DisableSteppers();
-      disable=1;
-      SetMainRelayState(OFF);
-    }  
   }
-  else if((emergencyStopSwitch.currentState==0)&&(emergencyStopSwitch.currentState!=emergencyStopSwitch.oldState)){
-    ESP.restart();  
-  }
-  emergencyStopSwitch.oldState=emergencyStopSwitch.currentState;
 }
-
-
 
 void IRAM_ATTR stopSwitchOneIsr(){
   uint8_t temp=0;
@@ -341,11 +349,13 @@ void setup()
     Serial2.println("failed to initialise EEPROM"); delay(1000);
   }
 
-  //Initialize timer, update every 10 ms
-  timer = timerBegin(0, 80, true);
-  timerAttachInterrupt(timer, &debounceTimer, true);
-  timerAlarmWrite(timer, 10000, true);
-  timerAlarmEnable(timer);
+  xTaskCreate(
+                    timedTask,          /* Task function. */
+                    "TimedTask",        /* String with name of task. */
+                    10000,            /* Stack size in bytes. */
+                    NULL,             /* Parameter passed as input of the task */
+                    1,                /* Priority of the task. */
+                    NULL);            /* Task handle. */
 
   //Configure stop stiwch pins and interrupts
   pinMode(stepper_config[MOTOR_ONE].stop_switch_low_active,INPUT_PULLUP);  //Configure stop switch pin as input pullup
@@ -386,7 +396,7 @@ void setup()
     }
     stepper[i] = s;
   }
-  
+
   uint8_t res = HomingCycle();
   
   if(res!=0){
@@ -425,7 +435,8 @@ uint8_t HomingCycle(void)
 {
   int initTime=0;
   int returnVal=0;
-  
+
+  EnableSteppers();
   stepper[MOTOR_ONE]->setSpeed(SECONDS_TO_MICROS/HOMING_SPEED);
   stepper[MOTOR_TWO]->setSpeed(SECONDS_TO_MICROS/HOMING_SPEED);
   stepper[MOTOR_ONE]->runBackward();
@@ -463,12 +474,16 @@ void DisableSteppers(void)
   stepper[MOTOR_ONE]->disableOutputs();
   stepper[MOTOR_TWO]->setAutoEnable(false);
   stepper[MOTOR_TWO]->disableOutputs();
+  Serial2.println("Steppers disabled!");
 }
 
 void EnableSteppers(void)
 {
   stepper[MOTOR_ONE]->setAutoEnable(true);
+  //stepper[MOTOR_ONE]->enableOutputs();
   stepper[MOTOR_TWO]->setAutoEnable(true);
+  //stepper[MOTOR_TWO]->enableOutputs();
+  Serial2.println("Steppers enabled!");
 }
 void WriteEEPRomWord(int address, int intvalue)
 {
@@ -477,6 +492,7 @@ void WriteEEPRomWord(int address, int intvalue)
 	low=intvalue-(256*high);
 	EEPROM.write(address,high);
 	EEPROM.write(address+1,low);
+  EEPROM.commit();
 }
 
 int ReadEEPRomWord(int address)
@@ -490,23 +506,35 @@ int ReadEEPRomWord(int address)
 
 void WriteEEProm()
 {
+  uint8_t temp=0;
+
 	EEPROM.write(0,111);
 	WriteEEPRomWord(1,FeedbackMin1);
 	WriteEEPRomWord(3,FeedbackMax1);
-	EEPROM.write(5,FeedbackPotDeadZone1*10);
+	EEPROM.write(5,FeedbackPotDeadZone1);
 	WriteEEPRomWord(6,FeedbackMin2);
 	WriteEEPRomWord(8,FeedbackMax2);
-	EEPROM.write(10,FeedbackPotDeadZone2*10);
+	EEPROM.write(10,FeedbackPotDeadZone2);
 	WriteEEPRomWord(11,int(proportional1*10.000));
 	WriteEEPRomWord(13,int(integral1*10.000));
 	WriteEEPRomWord(15,int(derivative1*10.000));
 	WriteEEPRomWord(17,int(proportional2*10.000));
 	WriteEEPRomWord(19,int(integral2*10.000));
 	WriteEEPRomWord(21,int(derivative2*10.000));
+  temp=map(motor1minspeed,1,MOTOR_MAX_SPEED,0,255);
+  EEPROM.write(23,temp);
+  temp=map(motor2minspeed,1,MOTOR_MAX_SPEED,0,255);
+  EEPROM.write(24,temp);
+  temp=map(motor1maxspeed,1,MOTOR_MAX_SPEED,0,255);
+  EEPROM.write(25,temp);
+  temp=map(motor2maxspeed,1,MOTOR_MAX_SPEED,0,255);
+  EEPROM.write(26,temp);
+  EEPROM.commit();
 }
 
 void ReadEEProm()
 {
+  uint8_t temp=0;
 	int evalue = EEPROM.read(0);
 	if(evalue != 111) //EEProm was not set before, set default values
 	{
@@ -525,6 +553,21 @@ void ReadEEProm()
 	proportional2=double(ReadEEPRomWord(17))/10.000;
 	integral2=double(ReadEEPRomWord(19))/10.000;
 	derivative2=double(ReadEEPRomWord(21))/10.000;
+  temp=EEPROM.read(23);
+  motor1minspeed=map(temp,0,255,1,MOTOR_MAX_SPEED);
+  temp=EEPROM.read(24);
+  motor2minspeed=map(temp,0,255,1,MOTOR_MAX_SPEED);
+  temp=EEPROM.read(25);
+  motor1maxspeed=map(temp,0,255,1,MOTOR_MAX_SPEED);
+  temp=EEPROM.read(26);
+  motor2maxspeed=map(temp,0,255,1,MOTOR_MAX_SPEED);
+
+  Serial2.print("motor 1 min speed: ");
+  Serial2.println(motor1minspeed);
+  Serial2.print("motor 1 max speed: ");
+  Serial2.println(motor1maxspeed);
+
+
 }
 
 void SendAnalogueFeedback(int analogue1, int analogue2)
@@ -599,6 +642,7 @@ void ClearEEProm()
 	{
 		EEPROM.write(z,255);
 	}
+  EEPROM.commit();
 }
 
 void ParseCommand()
@@ -634,6 +678,7 @@ void ParseCommand()
 	if(commandbuffer[0]==203)		//Write EEPROM
 	{
 		EEPROM.write(commandbuffer[1],uint8_t(commandbuffer[2]));
+    EEPROM.commit();
 		return;
 	}
 	if(commandbuffer[0]==204)		//Read EEPROM
@@ -672,7 +717,6 @@ void ParseCommand()
 
 void FeedbackPotWorker()
 {
-  int currentPosition1, currentPosition2;
   currentanalogue1 = stepper[0]->getCurrentPosition();
   currentanalogue2 = stepper[1]->getCurrentPosition();
 	//Notice: Minimum and maximum scaling calculation is done in the PC plugin with faster float support
@@ -755,8 +799,8 @@ void CalculateMotorDirection()
 		motordirection2=0;
 	}
 
-  OutputM1=constrain(OutputM1,MOTOR_MIN_SPEED,MOTOR_MAX_SPEED);
-  OutputM2=constrain(OutputM2,MOTOR_MIN_SPEED,MOTOR_MAX_SPEED);
+  OutputM1=constrain(OutputM1,motor1minspeed,motor1maxspeed);
+  OutputM2=constrain(OutputM2,motor2minspeed,motor2maxspeed);
   debuginteger=OutputM1;
 }
 
@@ -792,42 +836,58 @@ void CalculatePID()
 void UpdateSteppers()
 {
 
-  stepper[0]->setSpeed(SECONDS_TO_MICROS/OutputM1);
-  stepper[1]->setSpeed(SECONDS_TO_MICROS/OutputM2);
-  stepper[0]->applySpeedAcceleration();
-  stepper[1]->applySpeedAcceleration();
+  uint8_t res=0;
   
-  if(motordirection1!=0)
+  stepper[0]->setSpeed(SECONDS_TO_MICROS/OutputM1);
+  stepper[0]->applySpeedAcceleration();
+  stepper[1]->setSpeed(SECONDS_TO_MICROS/OutputM2);
+  stepper[1]->applySpeedAcceleration();
+
+  if(oldMotorDirection1!=motordirection1)
   {
-    if(motordirection1==1)
+    if(motordirection1!=0)
     {
-      stepper[MOTOR_ONE]->runForward();
+      if(motordirection1==1)
+      {
+        res=stepper[MOTOR_ONE]->runForward();
+      }
+      else
+      {
+        res=stepper[MOTOR_ONE]->runBackward();
+      }
     }
     else
     {
-      stepper[MOTOR_ONE]->runBackward();
+      stepper[MOTOR_ONE]->stopMove();
     }
-  }
-  else
-  {
-    stepper[MOTOR_ONE]->stopMove();
+    //Serial2.print("Motor direction: ");
+    //Serial2.println(motordirection1);
+    //Serial2.print("Instruction res: ");
+    //Serial2.println(res);
   }
 
-  if(motordirection2!=0)
+  if(oldMotorDirection2!=motordirection2)
   {
-    if(motordirection2==1)
+    if(motordirection2!=0)
     {
-      stepper[MOTOR_TWO]->runForward();
+      if(motordirection2==1)
+      {
+        stepper[MOTOR_TWO]->runForward();
+      }
+      else
+      {
+        stepper[MOTOR_TWO]->runBackward();
+      }
     }
     else
     {
-      stepper[MOTOR_TWO]->runBackward();
+      stepper[MOTOR_TWO]->stopMove();
     }
   }
-  else
-  {
-    stepper[MOTOR_TWO]->stopMove();
-  }
+
+  oldMotorDirection1=motordirection1;
+  oldMotorDirection2=motordirection2;
+  //delay(10);
 
 }
 
@@ -843,10 +903,21 @@ void loop()
 		CalculateVirtualTarget();
 		CalculatePID();
 		CalculateMotorDirection();
-		if((disable==0)&&(enableSpeedUpdate=true))
+		if(disable==0)
 		{
-      enableSpeedUpdate=false;
 			UpdateSteppers();
+
+      if(!stepper[MOTOR_ONE])
+      {
+        Serial2.println("Motor 1 Died?");
+        Serial2.flush();
+      }
+      
+      if(!stepper[MOTOR_TWO])
+      {
+        Serial2.println("Motor 2 Died?");
+        Serial2.flush();
+      }
       /*Serial2.print(OutputM1);
       Serial2.print(" ");
       Serial2.print(virtualtarget1);
@@ -867,6 +938,7 @@ void loop()
     else
     {
       //Serial2.println("disable = 1 ");
+      //delay(100);
     }
 		pidcount++;
 	}
