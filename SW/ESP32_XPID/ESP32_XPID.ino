@@ -90,7 +90,7 @@
 #define   MOTOR_TWO            1      //Motor two index
 #define   HOMING_SPEED         1000    //Homing speed in steps/second
 #define   HOMING_OFFSET        200    //Home offset in steps
-#define   HOMING_TIMEOUT       5000   //Home cycle time out in ms
+#define   HOMING_TIMEOUT       10000   //Home cycle time out in ms
 #define   MOTOR_MAX_SPEED      4000    //Motor max speed in steps/second
 #define   MOTOR_MIN_SPEED      10     //Motor min speed in steps/second
 #define   MOTOR_ACCELERATION   10000   //Motor acceleration in step/s^2 
@@ -138,7 +138,7 @@ byte errorcount	= 0;		// serial receive error detected by checksum
 //Motor data
 
 float AngleRatio = (float)OPERATION_ANGLE/(float)REVOLUTION_ANGLE;
-int StepsPerRevolution = STEPS_PER_REVOLUTION*REDUCTION_RATIO;
+long StepsPerRevolution = STEPS_PER_REVOLUTION*REDUCTION_RATIO;
 int MaxStepValue = (int)((float)StepsPerRevolution * AngleRatio);
 int MinStepValue = 0;
 
@@ -194,8 +194,8 @@ int virtualtarget1;
 int virtualtarget2;
 int currentanalogue1 = 0;
 int currentanalogue2 = 0;
-int target1=MaxStepValue/2;
-int target2=MaxStepValue/2;
+int target1=(MaxStepValue/2);
+int target2=(MaxStepValue/2);
 
 int FeedbackMax1			= MaxStepValue;		// Maximum position of pot 1 to scale, do not use 1023 because it cannot control outside the pot range
 int FeedbackMin1			= 0;		// Minimum position of pot 1 to scale, do not use 0 because it cannot control outside the pot range
@@ -493,6 +493,10 @@ void WriteEEPRomWord(int address, int intvalue)
 	EEPROM.write(address,high);
 	EEPROM.write(address+1,low);
   EEPROM.commit();
+  Serial2.print("EEPROM write address: ");
+  Serial2.print(address);
+  Serial2.print("  value:");
+  Serial2.println(intvalue);
 }
 
 int ReadEEPRomWord(int address)
@@ -501,6 +505,10 @@ int ReadEEPRomWord(int address)
 	high=EEPROM.read(address);
 	low=EEPROM.read(address+1);
 	returnvalue=(high*256)+low;
+  Serial2.print("EEPROM read address: ");
+  Serial2.print(address);
+  Serial2.print("  value:");
+  Serial2.println(returnvalue);
 	return returnvalue;
 }
 
@@ -582,6 +590,10 @@ void SendAnalogueFeedback(int analogue1, int analogue2)
 	low=analogue2-(high*256);
 	Serial.write(high);
 	Serial.write(low);
+  Serial2.print("Analog feedback: ");
+  Serial2.print(analogue1);
+  Serial2.print("  ");
+  Serial2.println(analogue2);
 }
 
 void SendPidCount()
@@ -600,6 +612,8 @@ void SendPidCount()
 	Serial.write(int(lhigh));
 	Serial.write(int(llow));
 	Serial.write(errorcount);
+  Serial2.print("PID Count: ");
+  Serial2.println(pidcount);
 }
 
 void SendDebugValues()
@@ -634,15 +648,20 @@ void EEPromToSerial(int eeprom_address)
 	Serial.write('X');
 	Serial.write(204);
 	Serial.write(retvalue);
+  Serial2.print("EEPROM to serial address: ");
+  Serial2.print(eeprom_address);
+  Serial2.print("  value: ");
+  Serial2.println(retvalue);
 }
 
 void ClearEEProm()
 {
-	for(int z=0; z < 1024; z++)
+	for(int z=0; z < EEPROM_SIZE; z++)
 	{
 		EEPROM.write(z,255);
 	}
   EEPROM.commit();
+  Serial2.println("Clear EEPROM");
 }
 
 void ParseCommand()
@@ -679,6 +698,10 @@ void ParseCommand()
 	{
 		EEPROM.write(commandbuffer[1],uint8_t(commandbuffer[2]));
     EEPROM.commit();
+    Serial2.print("Write EEPROM address: ");
+    Serial2.print(commandbuffer[1]);
+    Serial2.print(" value: ");
+    Serial2.println(commandbuffer[2]);
 		return;
 	}
 	if(commandbuffer[0]==204)		//Read EEPROM
@@ -751,7 +774,15 @@ void SerialWorker()
 			if(buffercount > 3)
 			{
 				if(CheckChecksum()==true){ParseCommand();}else{errorcount++;}
-				buffercount=-1;
+				
+        int i=0;
+        for (i=0;i<buffercount-1;i++)
+        {
+          Serial2.print(commandbuffer[i]);
+          Serial2.print(" ");
+        }
+        Serial2.println(commandbuffer[i]);
+        buffercount=-1;
 			}
 		}
 	}
