@@ -135,7 +135,7 @@ int commandbuffer[5]={0};
 unsigned long pidcount	= 0;		// unsigned 32bit, 0 to 4,294,967,295
 byte errorcount	= 0;		// serial receive error detected by checksum
 
-//Motor data
+//Motor data variables
 
 float AngleRatio = (float)OPERATION_ANGLE/(float)REVOLUTION_ANGLE;
 long StepsPerRevolution = STEPS_PER_REVOLUTION*REDUCTION_RATIO;
@@ -251,9 +251,6 @@ struct emergency_stop_switch_s{
   uint8_t pin; 
 };
 
-uint8_t oldMotorDirection1=0;
-uint8_t oldMotorDirection2=0;
-
 struct emergency_stop_switch_s emergencyStopSwitch={currentState:0,oldState:0,pin:EMERGENCY_STOP_PIN};
 
 //Function prototypes
@@ -264,6 +261,8 @@ void DisableSteppers(void);
 
 
 #define TASK_DELAY_100MS 100
+
+//100 ms Timed task function to handle general purpose timed actions
 void timedTask(void * parameter) {
   
   uint8_t i;
@@ -306,8 +305,10 @@ void timedTask(void * parameter) {
   }
 }
 
+//Interrupt handler for motor one stop switch
 void IRAM_ATTR stopSwitchOneIsr(){
   uint8_t temp=0;
+  //Check for switch debounce time
   if(debounce[MOTOR_ONE].enabled==false)
   {
     temp=digitalRead(stepper_config[MOTOR_ONE].stop_switch_low_active);
@@ -315,6 +316,7 @@ void IRAM_ATTR stopSwitchOneIsr(){
     
     if(temp==0)
     {
+      //Stop motor and set initial position
       Serial2.println("Interrupt!");
       stepper[MOTOR_ONE]->stopMove();
       stepper[MOTOR_ONE]->setCurrentPosition(-HOMING_OFFSET);
@@ -322,14 +324,17 @@ void IRAM_ATTR stopSwitchOneIsr(){
   }
 }
 
+//Interrupt handler for motor two stop switch
 void IRAM_ATTR stopSwitchTwoIsr(){
   uint8_t temp=0;
+  //Check for switch debounce time
   if(debounce[MOTOR_TWO].enabled==false)
   {
     temp=digitalRead(stepper_config[MOTOR_TWO].stop_switch_low_active);
     debounce[MOTOR_TWO].enabled=true;
     if(temp==0)
     {
+      //Stop motor and set initial position
       Serial2.println("Interrupt!");
       stepper[MOTOR_TWO]->stopMove();
       stepper[MOTOR_TWO]->setCurrentPosition(-HOMING_OFFSET); 
@@ -349,6 +354,7 @@ void setup()
     Serial2.println("failed to initialise EEPROM"); delay(1000);
   }
 
+  //Create timed task
   xTaskCreate(
                     timedTask,          /* Task function. */
                     "TimedTask",        /* String with name of task. */
@@ -370,6 +376,7 @@ void setup()
   pinMode(MAIN_RELAY_PIN,OUTPUT);
   digitalWrite(MAIN_RELAY_PIN,LOW);
 
+  //Enable main relay to start power supply
   SetMainRelayState(ON);
 
   //Init stepper engine
@@ -378,6 +385,7 @@ void setup()
     engine.setDebugLed(led_pin);
   }
 
+  //Initialize steppers configuration
   for (uint8_t i = 0; i < N_MOTORS; i++) {
     FastAccelStepper *s = NULL;
     const struct stepper_config_s *config = &stepper_config[i];
@@ -397,9 +405,12 @@ void setup()
     stepper[i] = s;
   }
 
+  //Proceed with homing cycle
   uint8_t res = HomingCycle();
-  
+
+  //Check if stop switch has been reched correcltly
   if(res!=0){
+    //Stop switch not reached! fix current position as initial
     Serial2.println("Homing cycle failed! Setting current position as 0");
     if((res & 2)!=0){
       Serial2.println("Motor one stop switch fail!");
@@ -412,6 +423,7 @@ void setup()
   }
   else
   {
+    //Stop switch reached correctly, move to center position
     Serial2.print("Current motor 1 position: ");
     Serial2.println(stepper[MOTOR_ONE]->getCurrentPosition());
     Serial2.print("Current motor 2 position: ");
@@ -431,6 +443,7 @@ void setup()
   }
 }
 
+//Homing cycle function moves motors backwards and waits for stop switch activation
 uint8_t HomingCycle(void)
 {
   int initTime=0;
@@ -463,6 +476,7 @@ uint8_t HomingCycle(void)
   return returnVal;
 }
 
+//Set main relay state function
 void SetMainRelayState(uint8_t state)
 {
   digitalWrite(MAIN_RELAY_PIN,state);
@@ -485,6 +499,7 @@ void EnableSteppers(void)
   //stepper[MOTOR_TWO]->enableOutputs();
   Serial2.println("Steppers enabled!");
 }
+
 void WriteEEPRomWord(int address, int intvalue)
 {
 	int low,high;
@@ -574,7 +589,6 @@ void ReadEEProm()
   Serial2.println(motor1minspeed);
   Serial2.print("motor 1 max speed: ");
   Serial2.println(motor1maxspeed);
-
 
 }
 
@@ -864,6 +878,7 @@ void CalculatePID()
 	OutputM2=updateMotor2Pid(virtualtarget2,currentanalogue2);
 }
 
+//UpdateSteppers function make changes on motor speed and update it while running
 void UpdateSteppers()
 {
 
