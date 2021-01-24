@@ -5,7 +5,7 @@
 
   Sentences to set at converter application USO settings:
   Datapacket sent at simulator start: Xa~100~~13~Xs~2~~13~XZ~5~~13~Xm~1~~13~XM~4~~13~XA~10~~13~XE~1~~13~XP~40~~13~XI~1~~13~XD~1~~13~XH~13~
-  Datapacket with axis information: XS~a01~~13~
+  Datapacket with axis information: XS~a01~~a02~~13~
   Datapacket sent at simulator stop: XE~0~~13~
   
 	Command input protocol for main serial
@@ -14,23 +14,17 @@
   'X''P'{value}"       Proportional value for left and right motor
   'X''I'{value}"       Integral value for left and right motor
   'X''D'{value}"       Derivative value for left and right motor
-  'X''H'               Homing cycle
-  'X''a'{value}
+  'X''H'               Make Homing cycle
+  'X''a'{value}        Set operation angle in degrees
+  'X''s'{value}        Set steps per revolution (x100)
+  'X''Z'{value}        Set steps deadzone
+  'X''m'{value}        Set min step speed (steps/second)
+  'X''M'{value}        Set mas step speed (x1000) (steps/second)
+  'X''A'{value}        Set acceleraion (x1000) (steps/second^2)
+  
 
-  Command input/outpu for debug serial
+  Command input/output for debug serial
   TODO!
-	'X' 200 0 0 C			Send back over serial port both setpper position raw values
-	'X' 201 0 0 C			Send back over serial port the current pid count
-	'X' 202 0 0 C			Send back over serial port the firmware version (used for x-sim autodetection)
-	'X' 203 M V C			Write EEPROM on address M (only 0 to 255 of 1024 Bytes of the EEPROM) with new value V
-	'X' 204 M 0 C			Read EEPROM on memory address M (only 0 to 255 of 1024 Bytes of the EEPROM), send back over serial the value
-	'X' 205 0 0 C			Clear EEPROM
-	'X' 206 0 0 C			Reread the whole EEPRom and store settings into fitting variables
-	'X' 207 0 0	C			Disable power on motor 1
-	'X' 208 0 0	C			Disable power on motor 2
-	'X' 209 0 0	C			Enable power on motor 1
-	'X' 210 0 0	C			Enable power on motor 2
-	'X' 211 0 0	C			Send all debug values
 
 	Pin out of ESP32 for steppers
 
@@ -53,7 +47,7 @@
 */
 
 #include <stdio.h>
-#include "FastAccelStepper.h"
+#include "FastAccelStepper.h"   //Using version 0.18.3
 
 //Defines
 #define DEBUG_BUFFER_SIZE 256  //Debug buffer size in bytes
@@ -78,7 +72,7 @@
 #define OFF 0
 
 #define GUARD_MOTOR_GAIN 100
-#define DEBOUNCE_TIME   2
+#define DEBOUNCE_TIME   10    //debounce time in hundred of ms
 
 //Pin defines
 #define STEP_L_PIN  21
@@ -229,6 +223,11 @@ void IRAM_ATTR stopSwitchOneIsr(){
     {
       //Stop motor and set initial position
       debugWBufferCount+=sprintf(debugWBuffer+debugWBufferCount,"Stop switch 1 interrupt! \r\n");
+      //disable interrupt during homing cycle to avoid undesired behavior
+      if(homingCycle)
+      {
+        detachInterrupt(stepper_config[ONE].stop_switch_low_active);
+      }
       stepper[ONE]->stopMove();
       stepper[ONE]->setCurrentPosition(-homingOffset);
     }
@@ -247,6 +246,11 @@ void IRAM_ATTR stopSwitchTwoIsr(){
     {
       //Stop motor and set initial position
       debugWBufferCount+=sprintf(debugWBuffer+debugWBufferCount,"Stop switch 2 interrupt! \r\n");
+      //disable interrupt during homing cycle to avoid undesired behavior
+      if(homingCycle)
+      {
+        detachInterrupt(stepper_config[TWO].stop_switch_low_active);
+      }
       stepper[TWO]->stopMove();
       stepper[TWO]->setCurrentPosition(-homingOffset); 
     }
@@ -323,7 +327,7 @@ void homingCycleTask (void * parameter)
             stepper[ONE]->forceStopAndNewPosition(0);
             stepper[TWO]->forceStopAndNewPosition(0);
             //then exit homing cycle
-            machineState=3;
+            machineState=6;
             debugWBufferCount+=sprintf(debugWBuffer+debugWBufferCount,"Homing cycle failed!\r\n");
             break;
           }
@@ -332,27 +336,44 @@ void homingCycleTask (void * parameter)
         else
         {
           machineState=1;
+          debugWBufferCount+=sprintf(debugWBuffer+debugWBufferCount,"Homing cycle step 1!\r\n");
         }
         break;
         
       case 1:
         //Move to middle position
+        debugWBufferCount+=sprintf(debugWBuffer+debugWBufferCount,"Stpr 1 pos: %d\r\n",stepper[ONE]->getCurrentPosition());
+        debugWBufferCount+=sprintf(debugWBuffer+debugWBufferCount,"Stpr 2 pos: %d\r\n",stepper[TWO]->getCurrentPosition());
         stepper[ONE]->moveTo(maxStepValue/2);
         stepper[TWO]->moveTo(maxStepValue/2);
+        debugWBufferCount+=sprintf(debugWBuffer+debugWBufferCount,"Homing cycle step 2!\r\n");
         machineState=2;
         break;
-        
       case 2:
+      case 3:
+      case 4:
+        //pasive delay
+        debugWBufferCount+=sprintf(debugWBuffer+debugWBufferCount,"Homing cycle step 3!\r\n");
+        machineState+=1;
+        break;
+        
+      case 5:
         //wait untiel middle position is reached to exit homming cycle
+        debugWBufferCount+=sprintf(debugWBuffer+debugWBufferCount,"Homing cycle step 4!\r\n");
         if((!stepper[ONE]->isRunning())&&(!stepper[TWO]->isRunning()))
         {
-          machineState=3;
+          machineState+=1;
           debugWBufferCount+=sprintf(debugWBuffer+debugWBufferCount,"Homing cycle succes!\r\n");
+          //After homing cycle completes, attahc interrupt again
+          attachInterrupt(stepper_config[ONE].stop_switch_low_active, stopSwitchOneIsr, CHANGE);
+          attachInterrupt(stepper_config[TWO].stop_switch_low_active, stopSwitchTwoIsr, CHANGE);
         }
+        debugWBufferCount+=sprintf(debugWBuffer+debugWBufferCount,"Stpr 1 state: %d\r\n",stepper[ONE]->isRunning());
+        debugWBufferCount+=sprintf(debugWBuffer+debugWBufferCount,"Stpr 1 state: %d\r\n",stepper[ONE]->isRunning());
         break;
-      case 3:
+      case 6:
         homingCycle=false;
-        
+        debugWBufferCount+=sprintf(debugWBuffer+debugWBufferCount,"Homing cycle step 5!\r\n");
         vTaskDelete(NULL);
         
         break;
@@ -397,9 +418,13 @@ void timedTask(void * parameter)
       ESP.restart();  
     }
     emergencyStopSwitch.oldState=emergencyStopSwitch.currentState;
-    
-    SendDebug();
 
+    //Enable send debug data when motor are enabled
+    if((disable==0)&&(homingCycle==0))
+    {
+      SendDebug();
+    }
+    
     pidCount=pidCounter;
     pidCounter=0;
     
@@ -527,13 +552,15 @@ void ParseCommand(char * rcvdBuffer)
       break;
     //Command for enable/disable motors
     case 'E':
-      if(rcvdBuffer[1]==1)
+      if(rcvdBuffer[1]=='1')
       {
+        engine.init();
         EnableSteppers();
       }
       else
       {
         DisableSteppers();
+        delay(1000);
         ESP.restart();
       }
       //debugWBufferCount+=sprintf(debugWBuffer+debugWBufferCount,"Enable: %d \r\n",rcvdBuffer[1]);
@@ -627,16 +654,8 @@ void SerialTask(void)
       mainRBuffer[mainRBufferCount]=buffer;
       mainRBufferCount++;
       if(buffer=='\r')
-      {
-        //Debug received data:
-        //add null terminator
-        //mainRBuffer[mainRBufferCount-1]='\0';
-        //add received data to debug buffer
-        //debugWBufferCount+=sprintf(debugWBuffer+debugWBufferCount,"Received data: %s \r\n",mainRBuffer);
-        //reset main buffer count
-        
+      {     
         mainRBufferCount=-1;
-
         ParseCommand(mainRBuffer);
         break;
       }
@@ -660,7 +679,7 @@ void InitPID (void)
 void InitSteppers(void)
 {
   //Init stepper engine
-  engine.init();
+  //engine.init();
   if (led_pin != PIN_UNDEFINED) {
     engine.setDebugLed(led_pin);
   }
@@ -706,10 +725,8 @@ void InitIO(void)
 void EnableSteppers(void)
 {
   stepper[ONE]->setAutoEnable(true);
-  //stepper[MOTOR_ONE]->enableOutputs();
   stepper[TWO]->setAutoEnable(true);
-  //stepper[MOTOR_TWO]->enableOutputs();
-  //Serial2.println("Steppers enabled!");
+  
   SetMainRelayState(ON);
   disable=0;
 }
@@ -722,7 +739,7 @@ void DisableSteppers(void)
     stepper[i]->setAutoEnable(false);
     stepper[i]->disableOutputs();
   }
-  //Serial2.println("Steppers disabled!");
+
   disable=1;
   SetMainRelayState(OFF);
 }
